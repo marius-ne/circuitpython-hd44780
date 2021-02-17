@@ -13,8 +13,6 @@
 import board
 import busio
 import time
-from adafruit_bus_device.i2c_device import I2CDevice
-
 class HD44780(object):
   # LCD Address
   ADDRESS = 0x27
@@ -69,7 +67,8 @@ class HD44780(object):
   def __init__(self,i2c=None,address=ADDRESS,trans_map={}):
     if i2c is None:
       i2c = busio.I2C(board.SCL,board.SDA)
-    self._device = I2CDevice(i2c,address)
+    self.i2c = i2c
+    self.address = address
     self.trans_map = trans_map
 
     self._write(0x03)
@@ -131,6 +130,5 @@ class HD44780(object):
   # --- write data to the bus   ----------------------------------------------
 
   def _write_to_i2c(self,data):
-    with self._device:
-      self._device.write(bytes([data]))
+    self.i2c.writeto(self.address,bytes([data]))
     time.sleep(0.0001)
